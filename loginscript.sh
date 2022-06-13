@@ -1,0 +1,1 @@
+curl -d "@data.json" -X post https://dev.stedi.me/login
