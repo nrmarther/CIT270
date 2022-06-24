@@ -8,10 +8,10 @@ const bodyparser = require('body-parser'); //import body-parser
 const {createClient} = require('redis');
 const redisClient  = createClient(
 {
-    url: 'redis://default@10.128.0.4:6379',w3
+    url: 'redis://default@10.128.0.4:6379',
 }
 ); //creates connection to redis client
-redisClient.connect();
+
 
 app.use(bodyparser.json()); //use the middleware (call it before anything else happens on each request)
 
@@ -19,8 +19,10 @@ https.createServer({
     key: fs.readFileSync('server.key'),
     cert: fs.readFileSync('server.cert'),
     passphrase: 'P@ssw0rd'
-}, app).listen(port, () => {
+}, app).listen(port, async() => {
     console.log('Listening on port: '+port)
+    await redisClient.connect();
+    console.log('successfully connected to redis server');
 })
 
 
