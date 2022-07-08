@@ -1,16 +1,16 @@
 const express = require('express'); //import the express library
 const https = require('https');
 const fs = require('fs');
-const port = 443; 
+const port = 443;
 const app = express(); //using express library to get application module
 const md5 = require('md5');
 const bodyparser = require('body-parser'); //import body-parser
 const {createClient} = require('redis');
 const redisClient  = createClient(
 {
-    url: 'redis://default@10.128.0.4:6379',
-}
-); //creates connection to redis client
+    url: 'redis://default@35.222.86.141:6379', //externalIP
+    // url: 'redis://default@10.128.0.4:6379', //internalIP
+});
 
 
 app.use(bodyparser.json()); //use the middleware (call it before anything else happens on each request)
@@ -66,4 +66,3 @@ redisClient.on('connected', function(){
 
 app.post('/signup', savePassword);
 app.post('/login',validatePassword);
-
