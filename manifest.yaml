@@ -1,0 +1,74 @@
+#© 2021 Sean Murdock
+# Version of Kubernetes API we are using
+apiVersion: apps/v1
+# This can be a statefulset, or a deployment, a deployment doesn't need a hard drive that sticks around
+kind: Deployment
+metadata:
+# This is the name of my deployment
+  name: nrmarther-cit270
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nrmarther-cit270
+  template:
+    metadata:
+      labels:
+        app: nrmarther-cit270
+    spec:
+      containers:
+        - name: nrmarhter-cit270
+        # This is  the Dockerhub url to my image
+          image: nrmarther/cit270
+          # This is the command to run once the container starts
+          command: ["npm"]
+          # These are the arguments to pass to the command when the container starts: ex: npm run start, we would say: ["run","start"]
+          args: ["run","start"]
+          # This is the port my container is listening on, ex: 443 or 4043
+          ports:
+            - containerPort: 443
+          resources:
+            limits:
+            # This is the max CPU (in cores) my container can use
+              cpu: ".125"
+            # This is the max memory (in millibytes)  
+              memory: "500Mi"
+            requests:
+            # This is the minimum CPU (in cores) my container can use
+              cpu: ".1"
+            # This is the minimum memory (in millibytes)
+              memory: "250Mi"
+          livenessProbe:
+            httpGet:
+            # This is the url to call to see if my API is running
+              path: /
+            # This is the port to use to see if my API is running
+              port: 443
+              # This is the protocol to use to check if my API is running
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+            # This is the url to call te see if my API has started
+              path: /
+            # This is the port to use to se if my API has started
+              port: 443
+              # This is the protocol to use to check if my API has started
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 3   
+
+# This is the start of a new document for the Load Balancer         
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nrmarther-cit270-loadbalancer
+spec:
+  selector:
+    app: nrmarther-cit270
+  type: LoadBalancer
+  ports:
+  - port: 443
+    targetPort: 443 
